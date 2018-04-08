@@ -14,6 +14,10 @@
 package com.kevalpatel2106.fingerprint_dialog_compat;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.hardware.fingerprint.FingerprintDialog;
+import android.os.Build;
+import android.os.CancellationSignal;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -23,7 +27,7 @@ import android.support.v4.app.FragmentManager;
  * Created by Keval on 07/04/18.
  * Builder for the fingerprint dialog. This builder will display the dialog based on the android version.
  *
- * @author [kevalpatel2106](https : / / github.com / kevalpatel2106)
+ * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
 public class FingerprintDialogBuilder {
 
@@ -86,7 +90,7 @@ public class FingerprintDialogBuilder {
      * Build the {@link FingerprintDialogCompatV23}. This dialog will be displayed for android version
      * between {@link android.os.Build.VERSION_CODES#M} to {@link android.os.Build.VERSION_CODES#O_MR1}.
      */
-    public void show(FragmentManager fragmentManager, AuthenticationCallback authenticationCallback) {
+    public void show(FragmentManager fragmentManager, final AuthenticationCallback authenticationCallback) {
 
         //Validate the title
         if (mTitle == null) {
@@ -106,14 +110,50 @@ public class FingerprintDialogBuilder {
                     "setDescription() to set the description of the dialog.");
         }
 
-        //Validate the button
         if (mButtonTitle == null) {
+            //Set the default button title
             mButtonTitle = mContext.getString(android.R.string.cancel);
         }
 
-        final FingerprintDialogCompatV23 fingerprintDialogCompat = FingerprintDialogCompatV23
-                .createDialog(mTitle, mSubTitle, mDescription, mButtonTitle);
-        fingerprintDialogCompat.setAuthenticationCallback(authenticationCallback);
-        fingerprintDialogCompat.show(fragmentManager, FingerprintDialogCompatV23.class.getName());
+        //Check if the android version supports fingerprint authentication?
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            //Check if the device has the fingerprint sensor?
+            if (FingerprintUtils.isSupportedHardware(mContext)) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                        || Build.VERSION.CODENAME.equals("P")/* TODO Remove once API 28 releases */) {
+                    showFingerprintDialog(authenticationCallback);
+                } else {
+                    final FingerprintDialogCompatV23 fingerprintDialogCompat = FingerprintDialogCompatV23
+                            .createDialog(mTitle, mSubTitle, mDescription, mButtonTitle);
+                    fingerprintDialogCompat.setAuthenticationCallback(authenticationCallback);
+                    fingerprintDialogCompat.show(fragmentManager, FingerprintDialogCompatV23.class.getName());
+                }
+                return;
+            }
+        }
+
+        //Android device doesn't support fingerprint sensor.
+        authenticationCallback.fingerprintAuthenticationNotSupported();
+    }
+
+    private void showFingerprintDialog(@NonNull final AuthenticationCallback authenticationCallback) {
+        new FingerprintDialog.Builder()
+                .setTitle(mTitle)
+                .setSubtitle(mSubTitle)
+                .setDescription(mDescription)
+                .setNegativeButton(mButtonTitle,
+                        mContext.getMainExecutor(),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialogInterface, final int i) {
+                                authenticationCallback.authenticationCanceledByUser();
+                            }
+                        })
+                .build(mContext)
+                .authenticate(new CancellationSignal(),
+                        mContext.getMainExecutor(),
+                        new AuthenticationCallbackV28(authenticationCallback));
     }
 }

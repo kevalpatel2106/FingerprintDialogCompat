@@ -15,8 +15,6 @@ package com.kevalpatel2106.fingerprint_dialog_compat;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
@@ -25,27 +23,9 @@ import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
  * Created by Keval on 08/04/18.
  * Utils class for all the module.
  *
- * @author [kevalpatel2106](https : / / github.com / kevalpatel2106)
+ * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
 public class FingerprintUtils {
-
-    /**
-     * Get the application icon.
-     *
-     * @param context {@link Context} of the caller.
-     * @return {@link Drawable} icon of the application.
-     * @throws PackageManager.NameNotFoundException If the package npt found.
-     */
-    @NonNull
-    static Drawable getApplicationIcon(@NonNull final Context context) throws PackageManager.NameNotFoundException {
-        try {
-            return context.getPackageManager().getApplicationIcon(context.getPackageName());
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
     /**
      * Open the Security settings screen.
      *

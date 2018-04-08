@@ -18,19 +18,21 @@ import android.support.annotation.Nullable;
 /**
  * Created by Keval on 08/04/18.
  *
- * @author [kevalpatel2106](https : / / github.com / kevalpatel2106)
+ * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
 public interface AuthenticationCallback {
+
+    void fingerprintAuthenticationNotSupported();
+
+    void hasNoFingerprintEnrolled();
 
     void onAuthenticationError(@ErrorCodes final int errorCode, @Nullable final CharSequence errString);
 
     void onAuthenticationHelp(@HelperCodes final int helpCode, @Nullable final CharSequence helpString);
 
+    void authenticationCanceledByUser();
+
     void onAuthenticationSucceeded();
 
     void onAuthenticationFailed();
-
-    void fingerprintAuthenticationNotSupported();
-
-    void authenticationCanceledByUser();
 }

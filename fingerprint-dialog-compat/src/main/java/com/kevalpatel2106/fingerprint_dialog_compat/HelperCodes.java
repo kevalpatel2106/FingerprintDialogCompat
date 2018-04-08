@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Created by Keval on 08/04/18.
  *
- * @author [kevalpatel2106](https : / / github.com / kevalpatel2106)
+ * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
 @SuppressWarnings("deprecation")
 @SuppressLint("InlinedApi")

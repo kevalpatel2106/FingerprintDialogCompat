@@ -15,8 +15,10 @@ package com.kevalpatel2106.fingerprint_dialog_compat;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -60,9 +62,10 @@ import javax.crypto.SecretKey;
  * Dialog that acts as the backport of {@link android.hardware.fingerprint.FingerprintDialog} for
  * android version below P.
  *
- * @author [kevalpatel2106](https : / / github.com / kevalpatel2106)
+ * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
 @SuppressWarnings("deprecation")
+@TargetApi(Build.VERSION_CODES.M)
 public class FingerprintDialogCompatV23 extends DialogFragment {
     private static final String KEY_NAME = UUID.randomUUID().toString();
 
@@ -134,6 +137,59 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                 container, false);
     }
 
+    /**
+     * Get the application icon.
+     *
+     * @param context {@link Context} of the caller.
+     * @return {@link Drawable} icon of the application.
+     * @throws PackageManager.NameNotFoundException If the package npt found.
+     */
+    @NonNull
+    private static Drawable getApplicationIcon(@NonNull final Context context) throws PackageManager.NameNotFoundException {
+        try {
+            return context.getPackageManager().getApplicationIcon(context.getPackageName());
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Window window = getDialog().getWindow();
+        if (window == null) return;
+
+        //Display the dialog full width of the screen
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setLayout(getResources().getDisplayMetrics().widthPixels,
+                WindowManager.LayoutParams.WRAP_CONTENT);
+
+        //Display the at the bottom of the screen
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.BOTTOM;
+        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        window.setAttributes(wlp);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (FingerprintUtils.isSupportedHardware(mContext)) {
+            startAuth();
+        } else {
+            mCallback.fingerprintAuthenticationNotSupported();
+            dismiss();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopAuth();
+    }
+
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -185,7 +241,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         //Set the application drawable.
         try {
             AppCompatImageView appIconIv = view.findViewById(R.id.app_icon_iv);
-            appIconIv.setImageDrawable(FingerprintUtils.getApplicationIcon(mContext));
+            appIconIv.setImageDrawable(getApplicationIcon(mContext));
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage());
         }
@@ -194,48 +250,12 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         mStatusText = view.findViewById(R.id.fingerprint_status_tv);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Window window = getDialog().getWindow();
-        if (window == null) return;
-
-        //Display the dialog full width of the screen
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setLayout(getResources().getDisplayMetrics().widthPixels,
-                WindowManager.LayoutParams.WRAP_CONTENT);
-
-        //Display the at the bottom of the screen
-        WindowManager.LayoutParams wlp = window.getAttributes();
-        wlp.gravity = Gravity.BOTTOM;
-        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-        window.setAttributes(wlp);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (FingerprintUtils.isSupportedHardware(mContext)) {
-            startAuth();
-        } else {
-            mCallback.fingerprintAuthenticationNotSupported();
-            dismiss();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        stopAuth();
-    }
-
     /**
      * Generate authentication key.
      *
      * @return true if the key generated successfully.
      */
-    @TargetApi(23)
+    @TargetApi(Build.VERSION_CODES.M)
     private boolean generateKey() {
         mKeyStore = null;
         KeyGenerator keyGenerator;
@@ -269,12 +289,18 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    @Nullable
+    private FingerprintManager.CryptoObject getCryptoObject() {
+        return cipherInit() ? new FingerprintManager.CryptoObject(mCipher) : null;
+    }
+
     /**
      * Initialize the cipher.
      *
      * @return true if the initialization is successful.
      */
-    @TargetApi(23)
+    @TargetApi(Build.VERSION_CODES.M)
     private boolean cipherInit() {
         boolean isKeyGenerated = generateKey();
 
@@ -302,10 +328,29 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    @Nullable
-    private FingerprintManager.CryptoObject getCryptoObject() {
-        return cipherInit() ? new FingerprintManager.CryptoObject(mCipher) : null;
+    /**
+     * Stop the finger print authentication.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void stopAuth() {
+        if (isScanning && mCancellationSignal != null) {
+            isScanning = false;
+            mCancellationSignal.cancel();
+            mCancellationSignal = null;
+        }
+    }
+
+    private void displayStatusText(@NonNull final String status,
+                                   final boolean isDismiss) {
+
+        mStatusText.setText(status);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mStatusText.setText("");
+                if (isDismiss) dismiss();
+            }
+        }, 1000);
     }
 
     /**
@@ -318,9 +363,18 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         if (isScanning) stopAuth();
         final FingerprintManager fingerprintManager = (FingerprintManager) mContext.getSystemService(Context.FINGERPRINT_SERVICE);
 
+        if (fingerprintManager == null) {
+            mCallback.fingerprintAuthenticationNotSupported();
+            return;
+        }
+        if (!fingerprintManager.hasEnrolledFingerprints()) {
+            mCallback.hasNoFingerprintEnrolled();
+            return;
+        }
+
         final FingerprintManager.CryptoObject cryptoObject = getCryptoObject();
 
-        if (cryptoObject != null && fingerprintManager != null) {
+        if (cryptoObject != null) {
             final FingerprintManager.AuthenticationCallback authCallback = new FingerprintManager.AuthenticationCallback() {
                 @Override
                 public void onAuthenticationError(int errMsgId, CharSequence errString) {
@@ -368,30 +422,5 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
             mCallback.fingerprintAuthenticationNotSupported();
             dismiss();
         }
-    }
-
-    /**
-     * Stop the finger print authentication.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void stopAuth() {
-        if (isScanning && mCancellationSignal != null) {
-            isScanning = false;
-            mCancellationSignal.cancel();
-            mCancellationSignal = null;
-        }
-    }
-
-    private void displayStatusText(@NonNull final String status,
-                                   final boolean isDismiss) {
-
-        mStatusText.setText(status);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mStatusText.setText("");
-                if (isDismiss) dismiss();
-            }
-        }, 1000);
     }
 }

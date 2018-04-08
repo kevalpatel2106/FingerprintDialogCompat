@@ -18,7 +18,13 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.kevalpatel2106.fingerprint_dialog_compat.AuthenticationCallback
 import com.kevalpatel2106.fingerprint_dialog_compat.FingerprintDialogBuilder
+import com.kevalpatel2106.fingerprint_dialog_compat.FingerprintUtils
 
+/**
+ * Test activity.
+ *
+ * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
+ */
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +37,10 @@ class MainActivity : AppCompatActivity() {
                 .setDescription("Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description ")
                 .setNegativeButton(null)
                 .show(supportFragmentManager, object : AuthenticationCallback {
+                    override fun hasNoFingerprintEnrolled() {
+                        FingerprintUtils.openSecuritySettings(this@MainActivity)
+                    }
+
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
                         Toast.makeText(this@MainActivity, errString, Toast.LENGTH_LONG).show()
                     }
