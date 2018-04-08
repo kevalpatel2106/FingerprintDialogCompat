@@ -12,4 +12,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kevalpatel2106.fingerprint_dialog_compat" />
+    package="com.kevalpatel2106.fingerprint_dialog_compat">
+
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+</manifest>
