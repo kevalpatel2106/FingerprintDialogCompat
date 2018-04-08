@@ -137,23 +137,6 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                 container, false);
     }
 
-    /**
-     * Get the application icon.
-     *
-     * @param context {@link Context} of the caller.
-     * @return {@link Drawable} icon of the application.
-     * @throws PackageManager.NameNotFoundException If the package npt found.
-     */
-    @NonNull
-    private static Drawable getApplicationIcon(@NonNull final Context context) throws PackageManager.NameNotFoundException {
-        try {
-            return context.getPackageManager().getApplicationIcon(context.getPackageName());
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -168,6 +151,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         //Display the at the bottom of the screen
         WindowManager.LayoutParams wlp = window.getAttributes();
         wlp.gravity = Gravity.BOTTOM;
+        wlp.windowAnimations = R.style.DialogAnimation;
         wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         window.setAttributes(wlp);
     }
@@ -328,30 +312,6 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         }
     }
 
-    /**
-     * Stop the finger print authentication.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void stopAuth() {
-        if (isScanning && mCancellationSignal != null) {
-            isScanning = false;
-            mCancellationSignal.cancel();
-            mCancellationSignal = null;
-        }
-    }
-
-    private void displayStatusText(@NonNull final String status,
-                                   final boolean isDismiss) {
-
-        mStatusText.setText(status);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mStatusText.setText("");
-                if (isDismiss) dismiss();
-            }
-        }, 1000);
-    }
 
     /**
      * Start the finger print authentication by enabling the finger print sensor.
@@ -408,6 +368,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                 @Override
                 public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
                     mCallback.onAuthenticationSucceeded();
+                    dismiss();
                 }
             };
 
@@ -421,6 +382,48 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         } else {
             mCallback.fingerprintAuthenticationNotSupported();
             dismiss();
+        }
+    }
+
+    /**
+     * Stop the finger print authentication.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void stopAuth() {
+        if (isScanning && mCancellationSignal != null) {
+            isScanning = false;
+            mCancellationSignal.cancel();
+            mCancellationSignal = null;
+        }
+    }
+
+    private void displayStatusText(@NonNull final String status,
+                                   final boolean isDismiss) {
+
+        mStatusText.setText(status);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mStatusText.setText("");
+                if (isDismiss) dismiss();
+            }
+        }, 1000);
+    }
+
+    /**
+     * Get the application icon.
+     *
+     * @param context {@link Context} of the caller.
+     * @return {@link Drawable} icon of the application.
+     * @throws PackageManager.NameNotFoundException If the package npt found.
+     */
+    @NonNull
+    private Drawable getApplicationIcon(@NonNull final Context context) throws PackageManager.NameNotFoundException {
+        try {
+            return context.getPackageManager().getApplicationIcon(context.getPackageName());
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 }
