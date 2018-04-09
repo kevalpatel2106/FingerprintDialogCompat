@@ -11,7 +11,7 @@
  *  the specific language governing permissions and limitations under the License.
  */
 
-package com.kevalpatel2106.fingerprint_dialog_compat;
+package com.kevalpatel2106.fingerprintdialog;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -74,7 +74,15 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
     private static final String ARG_SUBTITLE = "arg_subtitle";
     private static final String ARG_NEGATIVE_BUTTON_TITLE = "arg_negative_button_title";
     private static final String ARG_DESCRIPTION = "arg_description";
+
+    /**
+     * {@link Context} of the activity with witch this dialog is attached.
+     */
     private Context mContext;
+
+    /**
+     * {@link KeyStore} for holding the fingerprint authentication key.
+     */
     private KeyStore mKeyStore;
     private Cipher mCipher;
     /**
@@ -96,6 +104,17 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
      */
     private CancellationSignal mCancellationSignal;
 
+    /**
+     * Create new instance of the {@link FingerprintDialogCompatV23}.
+     *
+     * @param title               Title of the dialog.
+     * @param subtitle            Subtitle of the dialog. Only first two lines of the subtitle will
+     *                            be displayed.
+     * @param description         Description to display on the dialog. Only first four lines of the
+     *                            description will be displayed.
+     * @param negativeButtonTitle Title of the negative/cancel button on the dialog.
+     * @return {@link FingerprintDialogCompatV23}
+     */
     static FingerprintDialogCompatV23 createDialog(@NonNull String title,
                                                    @NonNull String subtitle,
                                                    @NonNull String description,
@@ -115,6 +134,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
 
     /**
      * Set the {@link AuthenticationCallback} for notifying the status of fingerprint authentication.
+     * Application must have to call {@link #createDialog(String, String, String, String)}.
      *
      * @param callback {@link AuthenticationCallback}
      */
@@ -133,8 +153,8 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return LayoutInflater.from(getContext()).inflate(R.layout.fingerprint_compat_dialog,
-                container, false);
+        return LayoutInflater.from(getContext())
+                .inflate(R.layout.fingerprint_compat_dialog, container, false);
     }
 
     @Override
@@ -160,7 +180,10 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
     public void onResume() {
         super.onResume();
 
+        //Check if the device has fingerprint supported hardware.
         if (FingerprintUtils.isSupportedHardware(mContext)) {
+
+            //Device has supported hardware. Start fingerprint authentication.
             startAuth();
         } else {
             mCallback.fingerprintAuthenticationNotSupported();
@@ -171,7 +194,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
     @Override
     public void onPause() {
         super.onPause();
-        stopAuth();
+        stopAuthIfRunning();
     }
 
     @Override
@@ -184,6 +207,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         if (getArguments().containsKey(ARG_TITLE)) {
             final AppCompatTextView titleTv = view.findViewById(R.id.title_tv);
             titleTv.setText(getArguments().getString(ARG_TITLE));
+            titleTv.setSelected(true);
         } else {
             throw new IllegalStateException("Title cannot be null.");
         }
@@ -315,25 +339,27 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
 
     /**
      * Start the finger print authentication by enabling the finger print sensor.
-     * Note: Use this function in the onResume() of the activity/fragment. Never forget to call {@link #stopAuth()}
-     * in onPause() of the activity/fragment.
+     * Note: Use this function in the onResume() of the activity/fragment. Never forget to call
+     * {@link #stopAuthIfRunning()} in onPause() of the activity/fragment.
      */
     @TargetApi(Build.VERSION_CODES.M)
     private void startAuth() {
-        if (isScanning) stopAuth();
+        if (isScanning) stopAuthIfRunning();
         final FingerprintManager fingerprintManager = (FingerprintManager) mContext.getSystemService(Context.FINGERPRINT_SERVICE);
 
+        //Cannot access the fingerprint manager.
         if (fingerprintManager == null) {
             mCallback.fingerprintAuthenticationNotSupported();
             return;
         }
+
+        //No fingerprint enrolled.
         if (!fingerprintManager.hasEnrolledFingerprints()) {
             mCallback.hasNoFingerprintEnrolled();
             return;
         }
 
         final FingerprintManager.CryptoObject cryptoObject = getCryptoObject();
-
         if (cryptoObject != null) {
             final FingerprintManager.AuthenticationCallback authCallback = new FingerprintManager.AuthenticationCallback() {
                 @Override
@@ -380,6 +406,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                     authCallback,
                     new Handler(Looper.getMainLooper()));
         } else {
+            //Cannot access the secure keystore.
             mCallback.fingerprintAuthenticationNotSupported();
             dismiss();
         }
@@ -389,7 +416,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
      * Stop the finger print authentication.
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void stopAuth() {
+    private void stopAuthIfRunning() {
         if (isScanning && mCancellationSignal != null) {
             isScanning = false;
             mCancellationSignal.cancel();
@@ -397,6 +424,12 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         }
     }
 
+    /**
+     * Display the text in the {@link #mStatusText} for 1 second.
+     *
+     * @param status    Status text to display.
+     * @param isDismiss True if the dialog should dismiss after status text displayed.
+     */
     private void displayStatusText(@NonNull final String status,
                                    final boolean isDismiss) {
 
@@ -407,7 +440,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                 mStatusText.setText("");
                 if (isDismiss) dismiss();
             }
-        }, 1000);
+        }, 1000 /* 1 seconds */);
     }
 
     /**

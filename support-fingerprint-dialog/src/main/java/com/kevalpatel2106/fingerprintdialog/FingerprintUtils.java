@@ -11,7 +11,7 @@
  *  the specific language governing permissions and limitations under the License.
  */
 
-package com.kevalpatel2106.fingerprint_dialog_compat;
+package com.kevalpatel2106.fingerprintdialog;
 
 import android.content.Context;
 import android.content.Intent;

@@ -11,8 +11,9 @@
  *  the specific language governing permissions and limitations under the License.
  */
 
-package com.kevalpatel2106.fingerprint_dialog_compat;
+package com.kevalpatel2106.fingerprintdialog;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.hardware.fingerprint.FingerprintDialog;
@@ -29,68 +30,145 @@ import android.support.v4.app.FragmentManager;
  *
  * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
+@SuppressWarnings("WeakerAccess")
 public class FingerprintDialogBuilder {
 
+    /**
+     * {@link Context} of the caller.
+     */
     @NonNull
     private final Context mContext;
 
+    /**
+     * Title of fingerprint dialog.
+     */
     private String mTitle;
 
+    /**
+     * Subtitle of fingerprint dialog.
+     */
     private String mSubTitle;
 
+    /**
+     * Description of fingerprint dialog.
+     */
     private String mDescription;
 
+    /**
+     * Title to display on the negative button of fingerprint dialog.
+     */
     private String mButtonTitle;
 
+    /**
+     * Public constructor.
+     *
+     * @param context {@link Context} of the caller.
+     */
     public FingerprintDialogBuilder(@NonNull final Context context) {
         mContext = context;
     }
 
+    /**
+     * Set the title of the dialog. This is the required field.
+     *
+     * @param title Title string.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setTitle(int)
+     */
     public FingerprintDialogBuilder setTitle(@NonNull final String title) {
         mTitle = title;
         return this;
     }
 
+    /**
+     * Set the title of the dialog. This is the required field.
+     *
+     * @param title String resource of the title.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setTitle(String)
+     */
     public FingerprintDialogBuilder setTitle(@StringRes final int title) {
         mTitle = mContext.getString(title);
         return this;
     }
 
+    /**
+     * Set the subtitle of the dialog. This is the required field.
+     *
+     * @param subtitle Subtitle string.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setSubtitle(int)
+     */
     public FingerprintDialogBuilder setSubtitle(@NonNull final String subtitle) {
         mSubTitle = subtitle;
         return this;
     }
 
+    /**
+     * Set the subtitle of the dialog. This is the required field.
+     *
+     * @param subtitle String resource of the subtitle.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setSubtitle(String)
+     */
     public FingerprintDialogBuilder setSubtitle(@StringRes final int subtitle) {
         mSubTitle = mContext.getString(subtitle);
         return this;
     }
 
+    /**
+     * Set the description of the dialog. This is the required field.
+     *
+     * @param description String resource of the description.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setDescription(int)
+     */
     public FingerprintDialogBuilder setDescription(@NonNull final String description) {
         mDescription = description;
         return this;
     }
 
+    /**
+     * Set the description of the dialog. This is the required field.
+     *
+     * @param description String resource of the description.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setDescription(String)
+     */
     public FingerprintDialogBuilder setDescription(@StringRes final int description) {
         mDescription = mContext.getString(description);
         return this;
     }
 
+    /**
+     * Set the title of the negative button in the dialog. The default title of the button is "Cancel".
+     *
+     * @param text String of button title.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setNegativeButton(int)
+     */
     public FingerprintDialogBuilder setNegativeButton(@Nullable final String text) {
         mButtonTitle = text;
         return this;
     }
 
+    /**
+     * Set the title of the negative button in the dialog. The default title of the button is "Cancel".
+     *
+     * @param text String resource of button title.
+     * @return {@link FingerprintDialogBuilder}
+     * @see #setNegativeButton(String)
+     */
     public FingerprintDialogBuilder setNegativeButton(@StringRes final int text) {
         mButtonTitle = mContext.getString(text);
         return this;
     }
 
     /**
-     * Build the {@link FingerprintDialogCompatV23}. This dialog will be displayed for android version
-     * between {@link android.os.Build.VERSION_CODES#M} to {@link android.os.Build.VERSION_CODES#O_MR1}.
+     * Build the {@link FingerprintDialogCompatV23}. This dialog will be displayed for android version.
      */
-    public void show(FragmentManager fragmentManager, final AuthenticationCallback authenticationCallback) {
+    public void show(@NonNull final FragmentManager fragmentManager,
+                     @NonNull final AuthenticationCallback authenticationCallback) {
 
         //Validate the title
         if (mTitle == null) {
@@ -138,6 +216,7 @@ public class FingerprintDialogBuilder {
         authenticationCallback.fingerprintAuthenticationNotSupported();
     }
 
+    @TargetApi(Build.VERSION_CODES.P)
     private void showFingerprintDialog(@NonNull final AuthenticationCallback authenticationCallback) {
         new FingerprintDialog.Builder()
                 .setTitle(mTitle)

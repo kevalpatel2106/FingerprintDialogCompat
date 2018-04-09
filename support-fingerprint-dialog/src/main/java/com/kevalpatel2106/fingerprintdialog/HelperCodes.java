@@ -11,7 +11,7 @@
  *  the specific language governing permissions and limitations under the License.
  */
 
-package com.kevalpatel2106.fingerprint_dialog_compat;
+package com.kevalpatel2106.fingerprintdialog;
 
 import android.annotation.SuppressLint;
 import android.hardware.fingerprint.FingerprintManager;
@@ -22,6 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by Keval on 08/04/18.
+ * Error codes to detect the error from the fingerprint authentication. This error codes are for the
+ * errors which are recoverable. Fingerprint authentication won't terminate once the any of these
+ * error code occurs.
  *
  * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
@@ -29,14 +32,12 @@ import java.lang.annotation.RetentionPolicy;
 @SuppressLint("InlinedApi")
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
-        FingerprintManager.FINGERPRINT_ERROR_CANCELED,
-        FingerprintManager.FINGERPRINT_ERROR_LOCKOUT,
-        FingerprintManager.FINGERPRINT_ERROR_LOCKOUT_PERMANENT,
-        FingerprintManager.FINGERPRINT_ERROR_NO_FINGERPRINTS,
-        FingerprintManager.FINGERPRINT_ERROR_NO_SPACE,
-        FingerprintManager.FINGERPRINT_ERROR_TIMEOUT,
-        FingerprintManager.FINGERPRINT_ERROR_UNABLE_TO_PROCESS,
-        FingerprintManager.FINGERPRINT_ERROR_VENDOR
+        FingerprintManager.FINGERPRINT_ACQUIRED_GOOD,
+        FingerprintManager.FINGERPRINT_ACQUIRED_IMAGER_DIRTY,
+        FingerprintManager.FINGERPRINT_ACQUIRED_INSUFFICIENT,
+        FingerprintManager.FINGERPRINT_ACQUIRED_PARTIAL,
+        FingerprintManager.FINGERPRINT_ACQUIRED_TOO_FAST,
+        FingerprintManager.FINGERPRINT_ACQUIRED_TOO_SLOW,
 })
-public @interface ErrorCodes {
+public @interface HelperCodes {
 }

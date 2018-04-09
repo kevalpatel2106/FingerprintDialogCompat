@@ -16,9 +16,9 @@ package com.kevalpatel2106.sample
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import com.kevalpatel2106.fingerprint_dialog_compat.AuthenticationCallback
-import com.kevalpatel2106.fingerprint_dialog_compat.FingerprintDialogBuilder
-import com.kevalpatel2106.fingerprint_dialog_compat.FingerprintUtils
+import com.kevalpatel2106.fingerprintdialog.AuthenticationCallback
+import com.kevalpatel2106.fingerprintdialog.FingerprintDialogBuilder
+import com.kevalpatel2106.fingerprintdialog.FingerprintUtils
 
 /**
  * Test activity.
@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this@MainActivity,
                                 "Authentication success!!!",
                                 Toast.LENGTH_LONG).show()
-
                     }
 
                     override fun onAuthenticationFailed() {

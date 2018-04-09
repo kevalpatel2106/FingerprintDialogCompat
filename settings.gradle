@@ -11,4 +11,4 @@
  *  the specific language governing permissions and limitations under the License.
  */
 
-include ':app', ':fingerprint-dialog-compat'
+include ':app', ':support-fingerprint-dialog'
