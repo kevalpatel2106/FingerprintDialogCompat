@@ -15,6 +15,7 @@ package com.kevalpatel2106.fingerprintdialog;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -104,6 +105,8 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
      */
     private CancellationSignal mCancellationSignal;
 
+    private Runnable mStatusTextRunnable;
+
     /**
      * Create new instance of the {@link FingerprintDialogCompatV23}.
      *
@@ -140,6 +143,12 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
      */
     public void setAuthenticationCallback(@NonNull final AuthenticationCallback callback) {
         mCallback = callback;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // No call for super(). Bug on API Level > 11.
+        // https://stackoverflow.com/a/10261449
     }
 
     @Override
@@ -192,8 +201,20 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onDetach() {
+        super.onDetach();
+        stopAuthIfRunning();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        stopAuthIfRunning();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
         stopAuthIfRunning();
     }
 
@@ -417,7 +438,12 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void stopAuthIfRunning() {
-        if (isScanning && mCancellationSignal != null) {
+        if (mStatusTextRunnable != null) {
+            new Handler().removeCallbacks(mStatusTextRunnable);
+            mStatusTextRunnable = null;
+        }
+
+        if (mCancellationSignal != null) {
             isScanning = false;
             mCancellationSignal.cancel();
             mCancellationSignal = null;
@@ -434,13 +460,17 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                                    final boolean isDismiss) {
 
         mStatusText.setText(status);
-        new Handler().postDelayed(new Runnable() {
+        mStatusTextRunnable = new Runnable() {
             @Override
             public void run() {
-                mStatusText.setText("");
-                if (isDismiss) dismiss();
+
+                if (getDialog() != null && getDialog().isShowing()) {
+                    mStatusText.setText("");
+                    if (isDismiss) dismiss();
+                }
             }
-        }, 1000 /* 1 seconds */);
+        };
+        new Handler().postDelayed(mStatusTextRunnable, 1000 /* 1 seconds */);
     }
 
     /**
