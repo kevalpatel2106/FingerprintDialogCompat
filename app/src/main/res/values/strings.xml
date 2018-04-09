@@ -13,4 +13,15 @@
 
 <resources>
     <string name="app_name">Fingerprint Compat Sample</string>
+    <string name="access_restricted">Access restricted!!!</string>
+    <string name="tap_on_the_authenticate_button_to_authenticate_your_self">Tap on the authenticate button to authenticate your self.</string>
+    <string name="authenticate_using_fingerprint">Authenticate using fingerprint</string>
+    <string name="fingerprint_dialog_title">Authentication required</string>
+    <string name="fingerprint_dialog_subtitle">We need to make sure it is you.</string>
+    <string name="fingerprint_dialog_description">Place your finger on the fingerprint scanner and let the application perform biometric authentication.</string>
+    <string name="fingerprint_dialog_button_title">Stop authentication</string>
+    <string name="authentication_successful">Authentication successful!!!</string>
+    <string name="authentication_failed">Authentication failed!!!</string>
+    <string name="shhhhh_correct_pin_is_1234">(Shhhhh!!! Correct PIN is 1234.)</string>
+    <string name="enter_the_pin">Enter the PIN:</string>
 </resources>

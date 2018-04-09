@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright 2018 Keval Patel
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance wit
+  ~ the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for
+  ~  the specific language governing permissions and limitations under the License.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportHeight="58"
+        android:viewportWidth="58">
+    <path
+        android:fillColor="#C7CAC7"
+        android:pathData="M40,28c-1.104,0 -2,-0.896 -2,-2V13.601C38,8.858 33.738,5 28.5,5S19,8.858 19,13.601v3.22c0,1.104 -0.896,2 -2,2s-2,-0.896 -2,-2v-3.22C15,6.652 21.056,1 28.5,1S42,6.652 42,13.601V26C42,27.104 41.104,28 40,28z"
+        android:strokeColor="#C7CAC7"
+        android:strokeWidth="2"/>
+    <path
+        android:fillColor="#7383BF"
+        android:pathData="M8,26h42v32h-42z"/>
+    <path
+        android:fillColor="#6879AF"
+        android:pathData="M29,26h21v32h-21z"/>
+    <path
+        android:fillColor="#EBBA16"
+        android:pathData="M42.586,57l6.414,-6.414l0,-3.586l-5.586,0l-10,10z"/>
+    <path
+        android:fillColor="#4F5970"
+        android:pathData="M9,47l0,7.586l7.586,-7.586z"/>
+    <path
+        android:fillColor="#424A60"
+        android:pathData="M30.586,57l10,-10l-9.172,0l-10,10z"/>
+    <path
+        android:fillColor="#EACC18"
+        android:pathData="M28.586,47h-9.172l-9.707,9.707C9.512,56.902 9.256,57 9,57h9.586L28.586,47z"/>
+    <path
+        android:fillColor="#424A60"
+        android:pathData="M49,57l0,-3.586l-3.586,3.586z"/>
+    <path
+        android:fillColor="#4F5970"
+        android:pathData="M29,49.414l-7.586,7.586l7.586,0z"/>
+</vector>
