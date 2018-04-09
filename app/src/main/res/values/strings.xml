@@ -24,4 +24,8 @@
     <string name="authentication_failed">Authentication failed!!!</string>
     <string name="shhhhh_correct_pin_is_1234">(Shhhhh!!! Correct PIN is 1234.)</string>
     <string name="enter_the_pin">Enter the PIN:</string>
+    <string name="pin_authentication_btn_tite">PIN Authentication</string>
+    <string name="error_auth_canceled_by_user">Authentication canceled by the user!!!</string>
+    <string name="error_no_fingerprints_enrolled">Add at least one fingerprint for authentication.</string>
+    <string name="error_fingerprints_not_supported">Device doesn\'t support fingerprint.</string>
 </resources>

@@ -194,26 +194,33 @@ public class FingerprintDialogBuilder {
         }
 
         //Check if the android version supports fingerprint authentication?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            //Check if the device has the fingerprint sensor?
-            if (FingerprintUtils.isSupportedHardware(mContext)) {
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                        || Build.VERSION.CODENAME.equals("P")/* TODO Remove once API 28 releases */) {
-                    showFingerprintDialog(authenticationCallback);
-                } else {
-                    final FingerprintDialogCompatV23 fingerprintDialogCompat = FingerprintDialogCompatV23
-                            .createDialog(mTitle, mSubTitle, mDescription, mButtonTitle);
-                    fingerprintDialogCompat.setAuthenticationCallback(authenticationCallback);
-                    fingerprintDialogCompat.show(fragmentManager, FingerprintDialogCompatV23.class.getName());
-                }
-                return;
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            authenticationCallback.fingerprintAuthenticationNotSupported();
+            return;
         }
 
-        //Android device doesn't support fingerprint sensor.
-        authenticationCallback.fingerprintAuthenticationNotSupported();
+        //Check if the device has the fingerprint sensor?
+        if (!FingerprintUtils.isSupportedHardware(mContext)) {
+            authenticationCallback.fingerprintAuthenticationNotSupported();
+            return;
+        }
+
+        //Check if there are any fingerprints enrolled?
+        if (!FingerprintUtils.isFingerprintEnroled(mContext)) {
+            authenticationCallback.hasNoFingerprintEnrolled();
+            return;
+        }
+
+        //noinspection ConstantConditions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                || Build.VERSION.CODENAME.equals("P")/* TODO Remove once API 28 releases */) {
+            showFingerprintDialog(authenticationCallback);
+        } else {
+            final FingerprintDialogCompatV23 fingerprintDialogCompat = FingerprintDialogCompatV23
+                    .createDialog(mTitle, mSubTitle, mDescription, mButtonTitle);
+            fingerprintDialogCompat.setAuthenticationCallback(authenticationCallback);
+            fingerprintDialogCompat.show(fragmentManager, FingerprintDialogCompatV23.class.getName());
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.P)

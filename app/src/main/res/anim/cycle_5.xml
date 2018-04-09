@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright 2018 Keval Patel
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance wit
@@ -11,6 +12,6 @@
   ~  the specific language governing permissions and limitations under the License.
   -->
 
-<resources>
-    <color name="ic_launcher_background">#1A73E8</color>
-</resources>
+<cycleInterpolator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:cycles="5"/>

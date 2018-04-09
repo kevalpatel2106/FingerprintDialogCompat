@@ -12,9 +12,9 @@
   ~  the specific language governing permissions and limitations under the License.
   -->
 
-<resources>
-    <color name="colorPrimary">#795548</color>
-    <color name="colorPrimaryDark">#5D4037</color>
-    <color name="colorAccent">#009688</color>
-    <color name="ic_launcher_background">#1A73E8</color>
-</resources>
+<translate
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="600"
+    android:fromXDelta="0"
+    android:interpolator="@anim/cycle_5"
+    android:toXDelta="10"/>

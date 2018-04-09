@@ -67,6 +67,7 @@ class AuthenticationCallbackV28 extends FingerprintDialog.AuthenticationCallback
             //User did not register any fingerprints.
             case FingerprintDialog.FINGERPRINT_ERROR_NO_FINGERPRINTS:
                 mCallback.hasNoFingerprintEnrolled();
+                break;
 
                 //Any other unrecoverable error
             default:

@@ -16,11 +16,13 @@ package com.kevalpatel2106.sample
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import com.kevalpatel2106.fingerprintdialog.AuthenticationCallback
 import com.kevalpatel2106.fingerprintdialog.FingerprintDialogBuilder
 import com.kevalpatel2106.fingerprintdialog.FingerprintUtils
 import kotlinx.android.synthetic.main.activity_secure.*
+
 
 /**
  * Test activity.
@@ -56,6 +58,10 @@ class SecureActivity : AppCompatActivity() {
                     override fun hasNoFingerprintEnrolled() {
                         // User has no fingerprint enrolled.
                         // Redirecting to the settings.
+
+                        Toast.makeText(this@SecureActivity,
+                                getString(R.string.error_no_fingerprints_enrolled),
+                                Toast.LENGTH_SHORT).show()
                         FingerprintUtils.openSecuritySettings(this@SecureActivity)
                     }
 
@@ -81,18 +87,24 @@ class SecureActivity : AppCompatActivity() {
                     override fun onAuthenticationFailed() {
                         // Authentication failed.
                         // Fingerprint scanning is still running.
+                        val shakeAnim = AnimationUtils.loadAnimation(applicationContext, R.anim.shake)
+                        authentication_iv.startAnimation(shakeAnim)
                     }
 
                     override fun fingerprintAuthenticationNotSupported() {
                         // Device doesn't support fingerprint authentication.
                         // Switch to alternate authentication method.
+
+                        Toast.makeText(this@SecureActivity,
+                                getString(R.string.error_fingerprints_not_supported),
+                                Toast.LENGTH_SHORT).show()
                         setPinAuthentication()
                     }
 
                     override fun authenticationCanceledByUser() {
                         Toast.makeText(this@SecureActivity,
-                                "Authentication canceled by the user!!!",
-                                Toast.LENGTH_LONG).show()
+                                getString(R.string.error_auth_canceled_by_user),
+                                Toast.LENGTH_SHORT).show()
                     }
                 })
     }
@@ -104,6 +116,6 @@ class SecureActivity : AppCompatActivity() {
 
     private fun setPinAuthentication() {
         isAuthenticateUsingPin = true
-        authenticate_btn.text = "PIN Authentication"
+        authenticate_btn.text = getString(R.string.pin_authentication_btn_tite)
     }
 }
