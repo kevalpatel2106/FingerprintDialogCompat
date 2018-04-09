@@ -30,10 +30,13 @@ android:
 before_script:
     - chmod +x gradlew      #Grand permissions
 
+install:
+    - echo y | android update sdk -u -a -t tools
+    - echo y | android update sdk -u -a -t platform-tools
+    - echo y | android update sdk -u -a -t build-tools-28.0.0-rc1
+    - echo y | android update sdk -u -a -t android-P
+    - echo y | android update sdk -u -a -t extra-google-m2repository
+    - echo y | android update sdk -u -a -t extra-android-m2repository
+
 script:
-    - sudo mkdir -p $ANDROID_SDK/licenses
-    - sudo touch "$ANDROID_SDK/licenses/android-sdk-license"
-    - sudo touch "$ANDROID_SDK/licenses/android-sdk-preview-license"
-    - sudo echo -e "8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_SDK/licenses/android-sdk-license"
-    - sudo echo -e "504667f4c0de7af1a06de9f4b1727b84351f2910\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_SDK/licenses/android-sdk-preview-license"
     - ./gradlew assembleDebug -PdisablePreDex --stacktrace
