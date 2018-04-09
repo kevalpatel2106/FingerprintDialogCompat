@@ -31,7 +31,7 @@ before_script:
     - chmod +x gradlew      #Grand permissions
 
 before_install:
-    - yes | sdkmanager build-tools;28.0.0-rc1
+    - yes | sdkmanager "build-tools;28.0.0-rc1"
 
 script:
     - ./gradlew assembleDebug -PdisablePreDex --stacktrace
