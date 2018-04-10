@@ -1,21 +1,15 @@
 /*
- * Copyright 2018 Keval Patel
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance wit
- * the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for
- *  the specific language governing permissions and limitations under the License.
+ * Copyright (c) 2018. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
 package com.kevalpatel2106.fingerprintdialog;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -196,13 +190,13 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
             startAuth();
         } else {
             mCallback.fingerprintAuthenticationNotSupported();
-            dismiss();
+            closeDialog();
         }
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
+        super.onPause();
         stopAuthIfRunning();
     }
 
@@ -213,8 +207,8 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
+    public void onDetach() {
+        super.onDetach();
         stopAuthIfRunning();
     }
 
@@ -257,10 +251,8 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
             negativeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-
-                    //Authentication canceled by the user.
-                    mCallback.authenticationCanceledByUser();
-                    dismiss();
+                    //Close the dialog
+                    closeDialog();
                 }
             });
         } else {
@@ -388,6 +380,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                     displayStatusText(errString.toString(), true);
 
                     switch (errMsgId) {
+                        case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
                         case FingerprintManager.FINGERPRINT_ERROR_USER_CANCELED:
                             mCallback.authenticationCanceledByUser();
                             break;
@@ -415,7 +408,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
                 @Override
                 public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
                     mCallback.onAuthenticationSucceeded();
-                    dismiss();
+                    closeDialog();
                 }
             };
 
@@ -429,7 +422,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         } else {
             //Cannot access the secure keystore.
             mCallback.fingerprintAuthenticationNotSupported();
-            dismiss();
+            closeDialog();
         }
     }
 
@@ -450,6 +443,11 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
         }
     }
 
+    private void closeDialog() {
+        stopAuthIfRunning();
+        dismiss();
+    }
+
     /**
      * Display the text in the {@link #mStatusText} for 1 second.
      *
@@ -466,7 +464,7 @@ public class FingerprintDialogCompatV23 extends DialogFragment {
 
                 if (getDialog() != null && getDialog().isShowing()) {
                     mStatusText.setText("");
-                    if (isDismiss) dismiss();
+                    if (isDismiss) closeDialog();
                 }
             }
         };
