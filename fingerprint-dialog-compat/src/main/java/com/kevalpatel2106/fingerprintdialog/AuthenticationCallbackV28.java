@@ -14,19 +14,19 @@
 package com.kevalpatel2106.fingerprintdialog;
 
 import android.annotation.TargetApi;
-import android.hardware.fingerprint.FingerprintDialog;
+import android.hardware.biometrics.BiometricPrompt;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
 /**
  * Created by Keval on 08/04/18.
- * This class converts {@link FingerprintDialog.AuthenticationCallback} into {@link AuthenticationCallback}
+ * This class converts {@link BiometricPrompt.AuthenticationCallback} into {@link AuthenticationCallback}
  * for the android version P and above.
  *
  * @author <a href="https://github.com/kevalpatel2106">kevalpatel2106</a>
  */
 @TargetApi(Build.VERSION_CODES.P)
-class AuthenticationCallbackV28 extends FingerprintDialog.AuthenticationCallback {
+class AuthenticationCallbackV28 extends BiometricPrompt.AuthenticationCallback {
 
     /**
      * {@link AuthenticationCallback} implemented by the caller.
@@ -45,7 +45,7 @@ class AuthenticationCallbackV28 extends FingerprintDialog.AuthenticationCallback
     }
 
     /**
-     * @see FingerprintDialog.AuthenticationCallback#onAuthenticationError(int, CharSequence)
+     * @see BiometricPrompt.AuthenticationCallback#onAuthenticationError(int, CharSequence)
      */
     @Override
     public void onAuthenticationError(final int errorCode, final CharSequence errString) {
@@ -54,18 +54,18 @@ class AuthenticationCallbackV28 extends FingerprintDialog.AuthenticationCallback
         switch (errorCode) {
 
             //User canceled the scanning process by pressing the negative button.
-            case FingerprintDialog.FINGERPRINT_ERROR_USER_CANCELED:
+            case BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED:
                 mCallback.authenticationCanceledByUser();
                 break;
 
             // Device doesn't have the supported fingerprint hardware.
-            case FingerprintDialog.FINGERPRINT_ERROR_HW_NOT_PRESENT:
-            case FingerprintDialog.FINGERPRINT_ERROR_HW_UNAVAILABLE:
+            case  BiometricPrompt.BIOMETRIC_ERROR_HW_NOT_PRESENT:
+            case BiometricPrompt.BIOMETRIC_ERROR_HW_UNAVAILABLE:
                 mCallback.fingerprintAuthenticationNotSupported();
                 break;
 
             //User did not register any fingerprints.
-            case FingerprintDialog.FINGERPRINT_ERROR_NO_FINGERPRINTS:
+            case BiometricPrompt.BIOMETRIC_ERROR_NO_BIOMETRICS:
                 mCallback.hasNoFingerprintEnrolled();
                 break;
 
@@ -77,7 +77,7 @@ class AuthenticationCallbackV28 extends FingerprintDialog.AuthenticationCallback
 
 
     /**
-     * @see FingerprintDialog.AuthenticationCallback#onAuthenticationFailed()
+     * @see BiometricPrompt.AuthenticationCallback#onAuthenticationFailed()
      */
     @Override
     public void onAuthenticationFailed() {
@@ -86,7 +86,7 @@ class AuthenticationCallbackV28 extends FingerprintDialog.AuthenticationCallback
     }
 
     /**
-     * @see FingerprintDialog.AuthenticationCallback#onAuthenticationHelp(int, CharSequence)
+     * @see BiometricPrompt.AuthenticationCallback#onAuthenticationHelp(int, CharSequence)
      */
     @Override
     public void onAuthenticationHelp(final int helpCode, final CharSequence helpString) {
@@ -95,10 +95,10 @@ class AuthenticationCallbackV28 extends FingerprintDialog.AuthenticationCallback
     }
 
     /**
-     * @see FingerprintDialog.AuthenticationCallback#onAuthenticationSucceeded(FingerprintDialog.AuthenticationResult)
+     * @see BiometricPrompt.AuthenticationCallback#onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult)
      */
     @Override
-    public void onAuthenticationSucceeded(final FingerprintDialog.AuthenticationResult result) {
+    public void onAuthenticationSucceeded(final BiometricPrompt.AuthenticationResult result) {
         super.onAuthenticationSucceeded(result);
         mCallback.onAuthenticationSucceeded();
     }
