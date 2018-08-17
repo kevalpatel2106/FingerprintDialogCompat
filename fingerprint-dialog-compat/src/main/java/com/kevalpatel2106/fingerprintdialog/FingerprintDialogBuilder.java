@@ -16,7 +16,7 @@ package com.kevalpatel2106.fingerprintdialog;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.hardware.fingerprint.FingerprintDialog;
+import android.hardware.biometrics.BiometricPrompt;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.support.annotation.NonNull;
@@ -225,7 +225,7 @@ public class FingerprintDialogBuilder {
 
     @TargetApi(Build.VERSION_CODES.P)
     private void showFingerprintDialog(@NonNull final AuthenticationCallback authenticationCallback) {
-        new FingerprintDialog.Builder()
+        new BiometricPrompt.Builder(mContext)
                 .setTitle(mTitle)
                 .setSubtitle(mSubTitle)
                 .setDescription(mDescription)
@@ -237,7 +237,7 @@ public class FingerprintDialogBuilder {
                                 authenticationCallback.authenticationCanceledByUser();
                             }
                         })
-                .build(mContext)
+                .build()
                 .authenticate(new CancellationSignal(),
                         mContext.getMainExecutor(),
                         new AuthenticationCallbackV28(authenticationCallback));
